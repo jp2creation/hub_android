@@ -6,7 +6,7 @@
     "versionName": "1.55",
     "required": false,
     "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.55/JP2_Creation_1.55.apk",
-    "sha256": "",
-    "releaseNotes": "Version 1.55 stable : bascule des mises a jour Android vers le depot hub_android."
+    "sha256": "df039e3fbe08c3d4e5595218a9ac73aa4b7f7094279e162f83d5c6c6ac46918d",
+    "releaseNotes": "Version 1.55 stable : depot Android separe hub_android, signature JP2 Creation et URL Hub injectee par secret."
   }
 }
