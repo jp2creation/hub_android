@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.SurfaceTexture;
@@ -199,6 +200,22 @@ public class MainActivity extends Activity {
                 pendingInstallPermissionUpdate = null;
                 showUpdateFailure("Autorisation non accordee : Android bloque l'installation de la mise a jour.");
             }
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        configureSystemBars();
+
+        if (webView != null) {
+            webView.requestLayout();
+            webView.invalidate();
+        }
+
+        if (splashView != null) {
+            splashView.requestLayout();
+            splashView.invalidate();
         }
     }
 
