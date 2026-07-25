@@ -1,4 +1,4 @@
-package fr.martinsols.crm;
+package fr.jp2creation.hub;
 
 import android.Manifest;
 import android.app.Activity;
@@ -76,13 +76,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MainActivity extends Activity {
-    private static final String HUB_URL = "https://crm.jp2.fr/?mobile_app=1";
-    private static final String UPDATE_MANIFEST_API_URL = "https://api.github.com/repos/jp2creation/hub_android/contents/releases/martin-sols-update.json?ref=main";
-    private static final String UPDATE_MANIFEST_URL = "https://raw.githubusercontent.com/jp2creation/hub_android/main/releases/martin-sols-update.json";
+    private static final String HUB_URL = BuildConfig.HUB_URL;
+    private static final String UPDATE_MANIFEST_API_URL = "https://api.github.com/repos/jp2creation/hub_android/contents/releases/jp2-hub-android-update.json?ref=main";
+    private static final String UPDATE_MANIFEST_URL = "https://raw.githubusercontent.com/jp2creation/hub_android/main/releases/jp2-hub-android-update.json";
     private static final String APK_MIME_TYPE = "application/vnd.android.package-archive";
     private static final String APP_SETTINGS_OVERRIDE_ASSET = "app-settings-override.js";
-    private static final String MOBILE_AUTH_PREFS = "martin_sols_mobile_auth";
-    private static final String MOBILE_AUTH_KEY_ALIAS = "martin_sols_mobile_session";
+    private static final String MOBILE_AUTH_PREFS = "jp2_creation_mobile_auth";
+    private static final String MOBILE_AUTH_KEY_ALIAS = "jp2_creation_mobile_session";
     private static final String MOBILE_AUTH_SESSION_CIPHER = "session_cipher";
     private static final String MOBILE_AUTH_SESSION_IV = "session_iv";
     private static final String MOBILE_AUTH_APP_CODE_HASH = "app_code_hash";
@@ -104,9 +104,9 @@ public class MainActivity extends Activity {
     private static final float INTRO_VIDEO_WIDTH_FRACTION = 0.62f;
     private static final float INTRO_VIDEO_HEIGHT_FRACTION = 0.62f;
     private static final int INTRO_VIDEO_MAX_WIDTH_DP = 260;
-    private static final int MARTIN_SOLS_RED = Color.rgb(149, 0, 46);
-    private static final int MARTIN_SOLS_BACKGROUND = Color.rgb(245, 247, 251);
-    private static final int MARTIN_SOLS_NAVIGATION = Color.rgb(17, 24, 39);
+    private static final int JP2_CREATION_RED = Color.rgb(149, 0, 46);
+    private static final int JP2_CREATION_BACKGROUND = Color.rgb(245, 247, 251);
+    private static final int JP2_CREATION_NAVIGATION = Color.rgb(17, 24, 39);
     private static final int SPLASH_BACKGROUND = Color.rgb(255, 250, 247);
 
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -308,11 +308,11 @@ public class MainActivity extends Activity {
     }
 
     private void configureCrmWebView(WebView view) {
-        view.setBackgroundColor(MARTIN_SOLS_BACKGROUND);
+        view.setBackgroundColor(JP2_CREATION_BACKGROUND);
         view.setOverScrollMode(View.OVER_SCROLL_NEVER);
         view.setWebViewClient(new CrmWebViewClient());
         view.setWebChromeClient(new CrmWebChromeClient());
-        view.addJavascriptInterface(new MartinSolsNativeAppBridge(), "MartinSolsNativeApp");
+        view.addJavascriptInterface(new Jp2CreationNativeAppBridge(), "Jp2CreationNativeApp");
         view.setVerticalScrollBarEnabled(false);
         view.setHorizontalScrollBarEnabled(false);
 
@@ -376,8 +376,8 @@ public class MainActivity extends Activity {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.setStatusBarColor(MARTIN_SOLS_RED);
-            window.setNavigationBarColor(MARTIN_SOLS_NAVIGATION);
+            window.setStatusBarColor(JP2_CREATION_RED);
+            window.setNavigationBarColor(JP2_CREATION_NAVIGATION);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -476,7 +476,7 @@ public class MainActivity extends Activity {
 
         new AlertDialog.Builder(this)
             .setTitle("Application a jour")
-            .setMessage("Aucune nouvelle version de Martin Sols n'est disponible pour le moment.")
+            .setMessage("Aucune nouvelle version de JP2 Création n'est disponible pour le moment.")
             .setPositiveButton("OK", null)
             .show();
     }
@@ -494,7 +494,10 @@ public class MainActivity extends Activity {
         String host = uri.getHost();
         String scheme = uri.getScheme();
 
-        return "https".equalsIgnoreCase(scheme) && "crm.jp2.fr".equalsIgnoreCase(host);
+        Uri configuredHubUri = Uri.parse(HUB_URL);
+        String configuredHost = configuredHubUri.getHost();
+
+        return "https".equalsIgnoreCase(scheme) && configuredHost != null && configuredHost.equalsIgnoreCase(host);
     }
 
     private void updateTrustedCrmPage(String url) {
@@ -757,7 +760,7 @@ public class MainActivity extends Activity {
             return;
         }
 
-        String script = "window.dispatchEvent(new CustomEvent('martin-sols:native-location-result',{detail:" + detail + "}));";
+        String script = "window.dispatchEvent(new CustomEvent('jp2-creation:native-location-result',{detail:" + detail + "}));";
 
         handler.post(new Runnable() {
             @Override
@@ -1075,7 +1078,7 @@ public class MainActivity extends Activity {
         ));
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
-            .setTitle("Connexion Martin Sols")
+            .setTitle("Connexion JP2 Création")
             .setMessage("Entre le code de l'app pour ouvrir le HUB.")
             .setView(layout)
             .setPositiveButton("Valider", null)
@@ -1242,7 +1245,7 @@ public class MainActivity extends Activity {
         cancelBiometricPrompt();
 
         BiometricPrompt.Builder builder = new BiometricPrompt.Builder(this)
-            .setTitle("Connexion Martin Sols")
+            .setTitle("Connexion JP2 Création")
             .setSubtitle("Confirme ton identite")
             .setDescription("Utilise l'empreinte, le visage ou le code configure sur ce telephone.");
 
@@ -1296,7 +1299,7 @@ public class MainActivity extends Activity {
         }
 
         Intent intent = keyguardManager.createConfirmDeviceCredentialIntent(
-            "Connexion Martin Sols",
+            "Connexion JP2 Création",
             "Confirme ton identite pour ouvrir le HUB."
         );
 
@@ -1352,7 +1355,7 @@ public class MainActivity extends Activity {
             return;
         }
 
-        String script = "window.dispatchEvent(new CustomEvent('martin-sols:native-auth-result',{detail:" + detail + "}));";
+        String script = "window.dispatchEvent(new CustomEvent('jp2-creation:native-auth-result',{detail:" + detail + "}));";
 
         handler.post(new Runnable() {
             @Override
@@ -1369,7 +1372,7 @@ public class MainActivity extends Activity {
             return;
         }
 
-        String script = "window.dispatchEvent(new CustomEvent('martin-sols:native-auth-status-changed',{detail:" + mobileAuthStatusJson() + "}));";
+        String script = "window.dispatchEvent(new CustomEvent('jp2-creation:native-auth-status-changed',{detail:" + mobileAuthStatusJson() + "}));";
 
         handler.post(new Runnable() {
             @Override
@@ -1404,7 +1407,7 @@ public class MainActivity extends Activity {
             connection.setRequestProperty("Accept", githubContentsResponse ? "application/vnd.github+json" : "application/json");
             connection.setRequestProperty("Cache-Control", "no-cache");
             connection.setRequestProperty("Pragma", "no-cache");
-            connection.setRequestProperty("User-Agent", "Martin-Sols-Android/" + BuildConfig.VERSION_NAME);
+            connection.setRequestProperty("User-Agent", "JP2-Creation-Android/" + BuildConfig.VERSION_NAME);
 
             int responseCode = connection.getResponseCode();
 
@@ -1466,7 +1469,7 @@ public class MainActivity extends Activity {
         }
 
         String versionLabel = update.versionName.length() > 0 ? update.versionName : String.valueOf(update.versionCode);
-        String message = "Une nouvelle version de Martin Sols est disponible : " + versionLabel + ".";
+        String message = "Une nouvelle version de JP2 Création est disponible : " + versionLabel + ".";
 
         if (update.releaseNotes.length() > 0) {
             message = message + "\n\n" + update.releaseNotes;
@@ -1510,9 +1513,9 @@ public class MainActivity extends Activity {
         pendingUpdateSha256 = update.sha256;
         updateInstallStarted = false;
         String versionLabel = update.versionName.length() > 0 ? update.versionName : String.valueOf(update.versionCode);
-        String fileName = "Martin_Sols_" + versionLabel + ".apk";
+        String fileName = "JP2_Creation_" + versionLabel + ".apk";
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(update.apkUrl));
-        request.setTitle("Mise a jour Martin Sols");
+        request.setTitle("Mise a jour JP2 Création");
         request.setDescription("Telechargement de la version " + versionLabel);
         request.setMimeType(APK_MIME_TYPE);
         request.setAllowedOverMetered(true);
@@ -1538,7 +1541,7 @@ public class MainActivity extends Activity {
 
         new AlertDialog.Builder(this)
             .setTitle("Autorisation Android requise")
-            .setMessage("Pour installer la mise a jour, autorise Martin Sols a installer des apps inconnues. Reviens ensuite dans l'app : le telechargement demarrera automatiquement.")
+            .setMessage("Pour installer la mise a jour, autorise JP2 Création a installer des apps inconnues. Reviens ensuite dans l'app : le telechargement demarrera automatiquement.")
             .setPositiveButton("Ouvrir les reglages", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -1643,7 +1646,7 @@ public class MainActivity extends Activity {
         ));
 
         updateProgressDialog = new AlertDialog.Builder(this)
-            .setTitle("Mise a jour Martin Sols")
+            .setTitle("Mise a jour JP2 Création")
             .setView(layout)
             .setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
                 @Override
@@ -2057,7 +2060,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private final class MartinSolsNativeAppBridge {
+    private final class Jp2CreationNativeAppBridge {
         @JavascriptInterface
         public String getVersionName() {
             return BuildConfig.VERSION_NAME;
@@ -2137,7 +2140,7 @@ public class MainActivity extends Activity {
                 public void run() {
                     showSetAppCodeDialog();
                 }
-            }, "Ouverture du code app Martin Sols.");
+            }, "Ouverture du code app JP2 Création.");
         }
 
         @JavascriptInterface

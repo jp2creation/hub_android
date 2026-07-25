@@ -32,21 +32,23 @@ jobs:
 
       - name: Check signing secrets
         env:
-          MARTIN_SOLS_ANDROID_KEYSTORE_BASE64: ${{ secrets.MARTIN_SOLS_ANDROID_KEYSTORE_BASE64 }}
-          MARTIN_SOLS_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.MARTIN_SOLS_ANDROID_KEYSTORE_PASSWORD }}
-          MARTIN_SOLS_ANDROID_KEY_ALIAS: ${{ secrets.MARTIN_SOLS_ANDROID_KEY_ALIAS }}
-          MARTIN_SOLS_ANDROID_KEY_PASSWORD: ${{ secrets.MARTIN_SOLS_ANDROID_KEY_PASSWORD }}
+          JP2_CREATION_ANDROID_KEYSTORE_BASE64: ${{ secrets.JP2_CREATION_ANDROID_KEYSTORE_BASE64 }}
+          JP2_CREATION_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.JP2_CREATION_ANDROID_KEYSTORE_PASSWORD }}
+          JP2_CREATION_ANDROID_KEY_ALIAS: ${{ secrets.JP2_CREATION_ANDROID_KEY_ALIAS }}
+          JP2_CREATION_ANDROID_KEY_PASSWORD: ${{ secrets.JP2_CREATION_ANDROID_KEY_PASSWORD }}
+          JP2_HUB_ANDROID_URL: ${{ secrets.JP2_HUB_ANDROID_URL }}
         run: |
-          test -n "$MARTIN_SOLS_ANDROID_KEYSTORE_BASE64"
-          test -n "$MARTIN_SOLS_ANDROID_KEYSTORE_PASSWORD"
-          test -n "$MARTIN_SOLS_ANDROID_KEY_ALIAS"
-          test -n "$MARTIN_SOLS_ANDROID_KEY_PASSWORD"
+          test -n "$JP2_CREATION_ANDROID_KEYSTORE_BASE64"
+          test -n "$JP2_CREATION_ANDROID_KEYSTORE_PASSWORD"
+          test -n "$JP2_CREATION_ANDROID_KEY_ALIAS"
+          test -n "$JP2_CREATION_ANDROID_KEY_PASSWORD"
+          test -n "$JP2_HUB_ANDROID_URL"
 
       - name: Decode signing key
         env:
-          MARTIN_SOLS_ANDROID_KEYSTORE_BASE64: ${{ secrets.MARTIN_SOLS_ANDROID_KEYSTORE_BASE64 }}
+          JP2_CREATION_ANDROID_KEYSTORE_BASE64: ${{ secrets.JP2_CREATION_ANDROID_KEYSTORE_BASE64 }}
         run: |
-          echo "$MARTIN_SOLS_ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/martin-sols-release.jks
+          echo "$JP2_CREATION_ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/jp2-creation-release.jks
 
       - name: Read Android version
         id: version
@@ -56,15 +58,16 @@ jobs:
           echo "name=$version_name" >> "$GITHUB_OUTPUT"
           echo "code=$version_code" >> "$GITHUB_OUTPUT"
           echo "tag=hub-android-v$version_name" >> "$GITHUB_OUTPUT"
-          echo "apk=Martin_Sols_$version_name.apk" >> "$GITHUB_OUTPUT"
+          echo "apk=JP2_Creation_$version_name.apk" >> "$GITHUB_OUTPUT"
 
       - name: Build release APK
         working-directory: android
         env:
-          MARTIN_SOLS_ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/android/app/martin-sols-release.jks
-          MARTIN_SOLS_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.MARTIN_SOLS_ANDROID_KEYSTORE_PASSWORD }}
-          MARTIN_SOLS_ANDROID_KEY_ALIAS: ${{ secrets.MARTIN_SOLS_ANDROID_KEY_ALIAS }}
-          MARTIN_SOLS_ANDROID_KEY_PASSWORD: ${{ secrets.MARTIN_SOLS_ANDROID_KEY_PASSWORD }}
+          JP2_CREATION_ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/android/app/jp2-creation-release.jks
+          JP2_CREATION_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.JP2_CREATION_ANDROID_KEYSTORE_PASSWORD }}
+          JP2_CREATION_ANDROID_KEY_ALIAS: ${{ secrets.JP2_CREATION_ANDROID_KEY_ALIAS }}
+          JP2_CREATION_ANDROID_KEY_PASSWORD: ${{ secrets.JP2_CREATION_ANDROID_KEY_PASSWORD }}
+          JP2_HUB_ANDROID_URL: ${{ secrets.JP2_HUB_ANDROID_URL }}
         run: ./gradlew --no-daemon clean assembleRelease
 
       - name: Prepare release asset and manifest
@@ -90,9 +93,9 @@ jobs:
               | .android.apkUrl = $apkUrl
               | .android.sha256 = $sha256
               | .android.releaseNotes = $releaseNotes' \
-            releases/martin-sols-update.json > releases/martin-sols-update.json.tmp
+            releases/jp2-hub-android-update.json > releases/jp2-hub-android-update.json.tmp
 
-          mv releases/martin-sols-update.json.tmp releases/martin-sols-update.json
+          mv releases/jp2-hub-android-update.json.tmp releases/jp2-hub-android-update.json
 
       - name: Commit update manifest
         env:
@@ -100,7 +103,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add releases/martin-sols-update.json
+          git add releases/jp2-hub-android-update.json
           git commit -m "Update JP2 Hub Android manifest $VERSION_NAME" || true
           git push origin "HEAD:${GITHUB_REF_NAME}"
 

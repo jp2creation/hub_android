@@ -1,30 +1,38 @@
 apply plugin: 'com.android.application'
 
-def martinSolsKeystorePath = System.getenv("MARTIN_SOLS_ANDROID_KEYSTORE_PATH")
-def hasMartinSolsReleaseSigning = martinSolsKeystorePath != null && martinSolsKeystorePath.trim()
+def jp2CreationKeystorePath = System.getenv("JP2_CREATION_ANDROID_KEYSTORE_PATH")
+def hasJp2CreationReleaseSigning = jp2CreationKeystorePath != null && jp2CreationKeystorePath.trim()
+def jp2HubUrl = (System.getenv("JP2_HUB_ANDROID_URL") ?: "").trim()
+
+if (!jp2HubUrl) {
+    jp2HubUrl = "about:blank"
+}
+
+def escapedJp2HubUrl = jp2HubUrl.replace("\\", "\\\\").replace("\"", "\\\"")
 
 android {
-    namespace = "fr.martinsols.crm"
+    namespace = "fr.jp2creation.hub"
     compileSdk = rootProject.ext.compileSdkVersion
     buildFeatures {
         buildConfig = true
     }
     signingConfigs {
         release {
-            if (hasMartinSolsReleaseSigning) {
-                storeFile file(martinSolsKeystorePath)
-                storePassword System.getenv("MARTIN_SOLS_ANDROID_KEYSTORE_PASSWORD")
-                keyAlias System.getenv("MARTIN_SOLS_ANDROID_KEY_ALIAS")
-                keyPassword System.getenv("MARTIN_SOLS_ANDROID_KEY_PASSWORD")
+            if (hasJp2CreationReleaseSigning) {
+                storeFile file(jp2CreationKeystorePath)
+                storePassword System.getenv("JP2_CREATION_ANDROID_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("JP2_CREATION_ANDROID_KEY_ALIAS")
+                keyPassword System.getenv("JP2_CREATION_ANDROID_KEY_PASSWORD")
             }
         }
     }
     defaultConfig {
-        applicationId "fr.martinsols.crm"
+        applicationId "fr.jp2creation.hub"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 57
         versionName "1.55"
+        buildConfigField "String", "HUB_URL", "\"${escapedJp2HubUrl}\""
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
@@ -34,7 +42,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            if (hasMartinSolsReleaseSigning) {
+            if (hasJp2CreationReleaseSigning) {
                 signingConfig signingConfigs.release
             }
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

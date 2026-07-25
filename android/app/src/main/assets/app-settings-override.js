@@ -1,18 +1,18 @@
 (function () {
-  if (window.MartinSolsAndroidSettingsOverride) {
+  if (window.Jp2CreationAndroidSettingsOverride) {
     return;
   }
 
-  window.MartinSolsAndroidSettingsOverride = true;
+  window.Jp2CreationAndroidSettingsOverride = true;
 
-  var storageKey = 'martin-sols-native-settings';
+  var storageKey = 'jp2-creation-native-settings';
   var lastLocation = null;
   var locationLoading = false;
   var quickLoginLoading = false;
   var noticeTimer = null;
 
   function bridge() {
-    return window.MartinSolsNativeApp || null;
+    return window.Jp2CreationNativeApp || null;
   }
 
   function defaultSettings() {
@@ -58,12 +58,12 @@
   }
 
   function installStyles() {
-    if (document.getElementById('martin-sols-native-settings-style')) {
+    if (document.getElementById('jp2-creation-native-settings-style')) {
       return;
     }
 
     var style = document.createElement('style');
-    style.id = 'martin-sols-native-settings-style';
+    style.id = 'jp2-creation-native-settings-style';
     style.textContent = [
       '.ms-native-settings[hidden]{display:none!important}',
       'body.ms-native-settings-open{overflow:hidden!important}',
@@ -113,7 +113,7 @@
   function ensurePanel() {
     installStyles();
 
-    var panel = document.querySelector('[data-martin-sols-native-settings]');
+    var panel = document.querySelector('[data-jp2-creation-native-settings]');
 
     if (panel) {
       return panel;
@@ -121,7 +121,7 @@
 
     var wrapper = document.createElement('div');
     wrapper.innerHTML = [
-      '<div class="ms-native-settings" data-martin-sols-native-settings hidden>',
+      '<div class="ms-native-settings" data-jp2-creation-native-settings hidden>',
       '<section class="ms-native-settings-panel" role="dialog" aria-modal="true" aria-label="Paramètres de l app">',
       '<header class="ms-native-settings-header">',
       '<button class="ms-native-settings-back" type="button" data-ms-native-close aria-label="Fermer les paramètres de l app">' + icon('back') + '<span>Retour</span></button>',
@@ -134,9 +134,9 @@
       ]),
       group('Sécurité', [
         actionRow('Sécurité de l’appareil', 'Empreinte, visage ou code Android', 'shield', 'data-ms-native-device-security', '<span class="ms-native-settings-pill" data-ms-native-device-status>À configurer</span>'),
-        actionRow('Code app Martin Sols', 'Code local de 4 à 8 chiffres', 'lock', 'data-ms-native-set-app-code', '<span class="ms-native-settings-action" data-ms-native-set-app-code-action>Définir</span>'),
-        staticRow('État du code app', 'Protection locale Martin Sols', 'code', 'data-ms-native-app-code-status', 'Non défini'),
-        actionRow('Supprimer le code app', 'Retirer le code local Martin Sols', 'key', 'data-ms-native-clear-app-code', '›'),
+        actionRow('Code app JP2 Création', 'Code local de 4 à 8 chiffres', 'lock', 'data-ms-native-set-app-code', '<span class="ms-native-settings-action" data-ms-native-set-app-code-action>Définir</span>'),
+        staticRow('État du code app', 'Protection locale JP2 Création', 'code', 'data-ms-native-app-code-status', 'Non défini'),
+        actionRow('Supprimer le code app', 'Retirer le code local JP2 Création', 'key', 'data-ms-native-clear-app-code', '›'),
       ]),
       group('Connexion rapide', [
         actionRow('Activer la connexion rapide', 'Enregistrer cette session sur ce téléphone', 'fingerprint', 'data-ms-native-enable-auth', '<span class="ms-native-settings-action" data-ms-native-enable-auth-action>Activer</span>'),
@@ -148,7 +148,7 @@
       ]),
       group('Mises à jour', [
         actionRow('Rechercher une mise à jour', 'Contrôle via GitHub', 'refresh', 'data-ms-native-check-update', '›'),
-        staticRow('Version installée', 'Martin Sols Android', 'device', 'data-ms-native-app-version', 'App mobile'),
+        staticRow('Version installée', 'JP2 Création Android', 'device', 'data-ms-native-app-version', 'App mobile'),
       ]),
       group('Informations', [
         staticRow('Réseau', 'État de connexion actuel', 'wifi', 'data-ms-native-network-status', 'En ligne'),
@@ -163,7 +163,7 @@
     document.body.appendChild(wrapper.firstChild);
     bindPanel();
 
-    return document.querySelector('[data-martin-sols-native-settings]');
+    return document.querySelector('[data-jp2-creation-native-settings]');
   }
 
   function group(title, rows) {
@@ -386,13 +386,13 @@
     var nativeBridge = bridge();
 
     if (!nativeBridge || !nativeBridge.getVersionName) {
-      return 'Martin Sols Android';
+      return 'JP2 Création Android';
     }
 
     try {
-      return 'Martin Sols Android ' + nativeBridge.getVersionName();
+      return 'JP2 Création Android ' + nativeBridge.getVersionName();
     } catch (error) {
-      return 'Martin Sols Android';
+      return 'JP2 Création Android';
     }
   }
 
@@ -476,7 +476,7 @@
 
     function cleanup() {
       window.clearTimeout(timeout);
-      window.removeEventListener('martin-sols:native-location-result', onResult);
+      window.removeEventListener('jp2-creation:native-location-result', onResult);
     }
 
     function onResult(event) {
@@ -509,7 +509,7 @@
     showNotice('Recherche de la position...', false);
     renderPanel();
 
-    window.addEventListener('martin-sols:native-location-result', onResult);
+    window.addEventListener('jp2-creation:native-location-result', onResult);
     timeout = window.setTimeout(function () {
       cleanup();
       locationLoading = false;
@@ -604,7 +604,7 @@
 
     if (setAppCodeButton) {
       setAppCodeButton.addEventListener('click', function () {
-        callNative('setAppCode', 'Ouverture du code app Martin Sols.');
+        callNative('setAppCode', 'Ouverture du code app JP2 Création.');
       });
     }
 
@@ -666,7 +666,7 @@
   }
 
   function closePanel() {
-    var panel = query('[data-martin-sols-native-settings]');
+    var panel = query('[data-jp2-creation-native-settings]');
 
     if (panel) {
       panel.hidden = true;
@@ -693,7 +693,7 @@
   }, true);
 
   document.addEventListener('keydown', function (event) {
-    var panel = query('[data-martin-sols-native-settings]');
+    var panel = query('[data-jp2-creation-native-settings]');
 
     if (event.key === 'Escape' && panel && !panel.hidden) {
       closePanel();
@@ -702,5 +702,5 @@
 
   window.addEventListener('online', renderPanel);
   window.addEventListener('offline', renderPanel);
-  window.addEventListener('martin-sols:native-auth-status-changed', renderPanel);
+  window.addEventListener('jp2-creation:native-auth-status-changed', renderPanel);
 })();

@@ -7,9 +7,9 @@
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:fontFamily">sans</item>
-        <item name="android:windowBackground">@color/martin_sols_background</item>
-        <item name="android:statusBarColor">@color/martin_sols_red</item>
-        <item name="android:navigationBarColor">@color/martin_sols_navigation</item>
+        <item name="android:windowBackground">@color/jp2_creation_background</item>
+        <item name="android:statusBarColor">@color/jp2_creation_red</item>
+        <item name="android:navigationBarColor">@color/jp2_creation_navigation</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>

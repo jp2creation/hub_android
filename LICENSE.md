@@ -1,6 +1,6 @@
 # JP2 Hub Source Available License 1.0
 
-Copyright (c) 2026 Jean-Philippe DEGERT / JP2 Creation.
+Copyright (c) 2026 Jean-Philippe DEGERT / JP2 Création.
 All rights reserved except as expressly granted below.
 
 This license is a source-available license. It is not an OSI-approved open source
@@ -58,16 +58,16 @@ Creation before any of the following:
 - distributing the Software, a fork, a modified version, a mobile build, an
   installer, a compiled asset bundle or any derivative work;
 - removing or replacing the copyright, license, attribution or ownership notices;
-- using the Martin Sols, JP2 Creation or HUB names, logos or visual identity
+- using the JP2 Création or JP2 Hub names, logos or visual identity
   outside the permissions granted by the copyright holder.
 
-Only Jean-Philippe DEGERT / JP2 Creation may grant distribution or professional
+Only Jean-Philippe DEGERT / JP2 Création may grant distribution or professional
 use rights. Permission must be explicit and written.
 
 ## 4. Contributions
 
 By submitting a contribution, you confirm that you have the right to submit it
-and you grant Jean-Philippe DEGERT / JP2 Creation a perpetual, worldwide,
+and you grant Jean-Philippe DEGERT / JP2 Création a perpetual, worldwide,
 royalty-free license to use, reproduce, modify, distribute, sublicense and
 relicense your contribution as part of the Software.
 
@@ -101,4 +101,4 @@ your possession or control, unless a separate written agreement allows otherwise
 
 For Professional Use, Commercial Use, resale, redistribution, hosting,
 white-labeling or any doubt about permitted use, contact Jean-Philippe DEGERT /
-JP2 Creation before using the Software.
+JP2 Création before using the Software.

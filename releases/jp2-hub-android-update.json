@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "appName": "Martin Sols",
+  "appName": "JP2 Création",
   "android": {
     "versionCode": 57,
     "versionName": "1.55",
     "required": false,
-    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.55/Martin_Sols_1.55.apk",
+    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.55/JP2_Creation_1.55.apk",
     "sha256": "",
     "releaseNotes": "Version 1.55 stable : bascule des mises a jour Android vers le depot hub_android."
   }
