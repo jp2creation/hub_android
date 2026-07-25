@@ -476,7 +476,7 @@ public class MainActivity extends Activity {
 
         new AlertDialog.Builder(this)
             .setTitle("Application a jour")
-            .setMessage("Aucune nouvelle version de JP2 Création n'est disponible pour le moment.")
+            .setMessage("Aucune nouvelle version de Martin Sols n'est disponible pour le moment.")
             .setPositiveButton("OK", null)
             .show();
     }
@@ -1078,7 +1078,7 @@ public class MainActivity extends Activity {
         ));
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
-            .setTitle("Connexion JP2 Création")
+            .setTitle("Connexion Martin Sols")
             .setMessage("Entre le code de l'app pour ouvrir le HUB.")
             .setView(layout)
             .setPositiveButton("Valider", null)
@@ -1245,7 +1245,7 @@ public class MainActivity extends Activity {
         cancelBiometricPrompt();
 
         BiometricPrompt.Builder builder = new BiometricPrompt.Builder(this)
-            .setTitle("Connexion JP2 Création")
+            .setTitle("Connexion Martin Sols")
             .setSubtitle("Confirme ton identite")
             .setDescription("Utilise l'empreinte, le visage ou le code configure sur ce telephone.");
 
@@ -1299,7 +1299,7 @@ public class MainActivity extends Activity {
         }
 
         Intent intent = keyguardManager.createConfirmDeviceCredentialIntent(
-            "Connexion JP2 Création",
+            "Connexion Martin Sols",
             "Confirme ton identite pour ouvrir le HUB."
         );
 
@@ -1469,7 +1469,7 @@ public class MainActivity extends Activity {
         }
 
         String versionLabel = update.versionName.length() > 0 ? update.versionName : String.valueOf(update.versionCode);
-        String message = "Une nouvelle version de JP2 Création est disponible : " + versionLabel + ".";
+        String message = "Une nouvelle version de Martin Sols est disponible : " + versionLabel + ".";
 
         if (update.releaseNotes.length() > 0) {
             message = message + "\n\n" + update.releaseNotes;
@@ -1513,9 +1513,9 @@ public class MainActivity extends Activity {
         pendingUpdateSha256 = update.sha256;
         updateInstallStarted = false;
         String versionLabel = update.versionName.length() > 0 ? update.versionName : String.valueOf(update.versionCode);
-        String fileName = "JP2_Creation_" + versionLabel + ".apk";
+        String fileName = "Martin_Sols_" + versionLabel + ".apk";
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(update.apkUrl));
-        request.setTitle("Mise a jour JP2 Création");
+        request.setTitle("Mise a jour Martin Sols");
         request.setDescription("Telechargement de la version " + versionLabel);
         request.setMimeType(APK_MIME_TYPE);
         request.setAllowedOverMetered(true);
@@ -1541,7 +1541,7 @@ public class MainActivity extends Activity {
 
         new AlertDialog.Builder(this)
             .setTitle("Autorisation Android requise")
-            .setMessage("Pour installer la mise a jour, autorise JP2 Création a installer des apps inconnues. Reviens ensuite dans l'app : le telechargement demarrera automatiquement.")
+            .setMessage("Pour installer la mise a jour, autorise Martin Sols a installer des apps inconnues. Reviens ensuite dans l'app : le telechargement demarrera automatiquement.")
             .setPositiveButton("Ouvrir les reglages", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -1646,7 +1646,7 @@ public class MainActivity extends Activity {
         ));
 
         updateProgressDialog = new AlertDialog.Builder(this)
-            .setTitle("Mise a jour JP2 Création")
+            .setTitle("Mise a jour Martin Sols")
             .setView(layout)
             .setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
                 @Override
@@ -2140,7 +2140,7 @@ public class MainActivity extends Activity {
                 public void run() {
                     showSetAppCodeDialog();
                 }
-            }, "Ouverture du code app JP2 Création.");
+            }, "Ouverture du code app Martin Sols.");
         }
 
         @JavascriptInterface

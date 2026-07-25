@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">JP2 Création</string>
-    <string name="title_activity_main">JP2 Création</string>
+    <string name="app_name">Martin Sols</string>
+    <string name="title_activity_main">Martin Sols</string>
     <string name="package_name">fr.jp2creation.hub</string>
     <string name="custom_url_scheme">fr.jp2creation.hub</string>
 </resources>

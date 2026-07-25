@@ -1,6 +1,6 @@
-# JP2 Hub Android
+# Martin Sols Android
 
-Application Android WebView native pour JP2 Hub, propriété de JP2 Création.
+Application Android WebView native Martin Sols, propriété de JP2 Création.
 
 Le login, le shell mobile, les parametres propres a l'app, la localisation
 native et la connexion rapide restent integres dans l'app. Les pages et modules
@@ -27,7 +27,7 @@ qu'elle apparaisse dans GitHub.
 
 ## Fonctionnalites app
 
-- Animation d'entree JP2 Création embarquee dans l'APK.
+- Animation d'entree Martin Sols embarquee dans l'APK.
 - Navigateur integre avec retour, avance, actualisation et conservation des
   liens dans l'app.
 - Parametres app : URL du serveur HUB, localisation, dernier module et
@@ -71,7 +71,7 @@ Secrets requis dans le depot `jp2creation/hub_android` :
 
 ## Licence
 
-Cette application Android fait partie de JP2 Hub et suit la licence du depot.
+Cette application Android fait partie du Hub et suit la licence du depot.
 Les sources peuvent etre consultees et testees pour evaluation personnelle, mais
 toute compilation, distribution, installation client, exploitation
 professionnelle, revente ou publication d'un APK demande l'accord ecrit

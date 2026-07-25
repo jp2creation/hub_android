@@ -134,9 +134,9 @@
       ]),
       group('Sécurité', [
         actionRow('Sécurité de l’appareil', 'Empreinte, visage ou code Android', 'shield', 'data-ms-native-device-security', '<span class="ms-native-settings-pill" data-ms-native-device-status>À configurer</span>'),
-        actionRow('Code app JP2 Création', 'Code local de 4 à 8 chiffres', 'lock', 'data-ms-native-set-app-code', '<span class="ms-native-settings-action" data-ms-native-set-app-code-action>Définir</span>'),
-        staticRow('État du code app', 'Protection locale JP2 Création', 'code', 'data-ms-native-app-code-status', 'Non défini'),
-        actionRow('Supprimer le code app', 'Retirer le code local JP2 Création', 'key', 'data-ms-native-clear-app-code', '›'),
+        actionRow('Code app Martin Sols', 'Code local de 4 à 8 chiffres', 'lock', 'data-ms-native-set-app-code', '<span class="ms-native-settings-action" data-ms-native-set-app-code-action>Définir</span>'),
+        staticRow('État du code app', 'Protection locale Martin Sols', 'code', 'data-ms-native-app-code-status', 'Non défini'),
+        actionRow('Supprimer le code app', 'Retirer le code local Martin Sols', 'key', 'data-ms-native-clear-app-code', '›'),
       ]),
       group('Connexion rapide', [
         actionRow('Activer la connexion rapide', 'Enregistrer cette session sur ce téléphone', 'fingerprint', 'data-ms-native-enable-auth', '<span class="ms-native-settings-action" data-ms-native-enable-auth-action>Activer</span>'),
@@ -148,7 +148,7 @@
       ]),
       group('Mises à jour', [
         actionRow('Rechercher une mise à jour', 'Contrôle via GitHub', 'refresh', 'data-ms-native-check-update', '›'),
-        staticRow('Version installée', 'JP2 Création Android', 'device', 'data-ms-native-app-version', 'App mobile'),
+        staticRow('Version installée', 'Martin Sols Android', 'device', 'data-ms-native-app-version', 'App mobile'),
       ]),
       group('Informations', [
         staticRow('Réseau', 'État de connexion actuel', 'wifi', 'data-ms-native-network-status', 'En ligne'),
@@ -386,13 +386,13 @@
     var nativeBridge = bridge();
 
     if (!nativeBridge || !nativeBridge.getVersionName) {
-      return 'JP2 Création Android';
+      return 'Martin Sols Android';
     }
 
     try {
-      return 'JP2 Création Android ' + nativeBridge.getVersionName();
+      return 'Martin Sols Android ' + nativeBridge.getVersionName();
     } catch (error) {
-      return 'JP2 Création Android';
+      return 'Martin Sols Android';
     }
   }
 
@@ -604,7 +604,7 @@
 
     if (setAppCodeButton) {
       setAppCodeButton.addEventListener('click', function () {
-        callNative('setAppCode', 'Ouverture du code app JP2 Création.');
+        callNative('setAppCode', 'Ouverture du code app Martin Sols.');
       });
     }
 
