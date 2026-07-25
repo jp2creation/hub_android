@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "appName": "Martin Sols",
   "android": {
-    "versionCode": 59,
-    "versionName": "1.57",
+    "versionCode": 60,
+    "versionName": "1.58",
     "required": false,
-    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.57/Martin_Sols_1.57.apk",
-    "sha256": "ddc7941a1aca05bcd43bf4b0d5ff93132b5e268c9c3ddf067224d1a3547ad0a8",
-    "releaseNotes": "Version 1.57 stable : l app respecte maintenant la rotation activee sur le telephone."
+    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.58/Martin_Sols_1.58.apk",
+    "sha256": "4466ce7dbfa13113cc36fb0a97f1949f5e9ab3c454d46bf9af893f1a93d153cf",
+    "releaseNotes": "Version 1.58 stable : ajout du bundle Google Play Store et conservation de l APK GitHub."
   }
 }
