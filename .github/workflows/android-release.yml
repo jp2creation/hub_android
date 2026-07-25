@@ -59,7 +59,7 @@ jobs:
           echo "code=$version_code" >> "$GITHUB_OUTPUT"
           echo "tag=hub-android-v$version_name" >> "$GITHUB_OUTPUT"
           echo "apk=Martin_Sols_$version_name.apk" >> "$GITHUB_OUTPUT"
-          echo "aab=Martin_Sols_$version_name_PlayStore.aab" >> "$GITHUB_OUTPUT"
+          echo "aab=Martin_Sols_${version_name}_PlayStore.aab" >> "$GITHUB_OUTPUT"
 
       - name: Build release APK and Play bundle
         working-directory: android
