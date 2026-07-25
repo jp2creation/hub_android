@@ -1,0 +1,69 @@
+# JP2 Hub Android
+
+Application Android WebView native pour JP2 Hub. L'installation Martin Sols est
+le contexte metier actuellement embarque dans cette application.
+
+Le login, le shell mobile, les parametres propres a l'app, la localisation
+native et la connexion rapide restent integres dans l'app. Les pages et modules
+du HUB sont charges en WebView depuis le serveur Laravel.
+
+URL HUB par defaut :
+
+```text
+https://crm.jp2.fr
+```
+
+Le code metier reste dans le HUB Laravel. Les mises a jour des modules web sont
+visibles dans l'app sans reconstruire l'APK, tant que le cadre mobile ne change
+pas.
+
+## Fonctionnalites app
+
+- Animation d'entree Martin Sols embarquee dans l'APK.
+- Navigateur integre avec retour, avance, actualisation et conservation des
+  liens dans l'app.
+- Parametres app : URL du serveur HUB, localisation, dernier module et
+  commandes navigateur.
+- Localisation native Capacitor avec permissions Android fine/coarse.
+- Etat reseau et informations version/appareil visibles dans les parametres.
+
+## Commandes
+
+```bash
+npm install
+npm run build
+npx cap sync android
+npx cap open android
+```
+
+## APK debug
+
+```bash
+npm run apk:debug
+```
+
+APK genere :
+
+```text
+android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+## Release GitHub
+
+Le workflow `.github/workflows/android-release.yml` construit l'APK signee,
+publie la release GitHub et actualise `releases/martin-sols-update.json`.
+
+Secrets requis dans le depot `jp2creation/hub_android` :
+
+- `MARTIN_SOLS_ANDROID_KEYSTORE_BASE64`
+- `MARTIN_SOLS_ANDROID_KEYSTORE_PASSWORD`
+- `MARTIN_SOLS_ANDROID_KEY_ALIAS`
+- `MARTIN_SOLS_ANDROID_KEY_PASSWORD`
+
+## Licence
+
+Cette application Android fait partie de JP2 Hub et suit la licence du depot.
+Les sources peuvent etre consultees et testees pour evaluation personnelle, mais
+toute compilation, distribution, installation client, exploitation
+professionnelle, revente ou publication d'un APK demande l'accord ecrit
+prealable de Jean-Philippe DEGERT / JP2 Creation.

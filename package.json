@@ -1,0 +1,26 @@
+{
+  "name": "jp2-hub-android",
+  "private": true,
+  "version": "1.0.55",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "cap:sync": "capacitor sync",
+    "cap:add:android": "capacitor add android",
+    "cap:open:android": "capacitor open android",
+    "apk:debug": "npm run build && capacitor sync android && cd android && sh ./gradlew assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/cli": "^8.4.1",
+    "@capacitor/core": "^8.4.1",
+    "@capacitor/keyboard": "^8.0.5",
+    "@capacitor/status-bar": "^8.0.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.1.4"
+  }
+}

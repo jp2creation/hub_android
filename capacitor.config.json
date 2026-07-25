@@ -1,0 +1,28 @@
+{
+  "appId": "fr.martinsols.crm",
+  "appName": "Martin Sols",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "allowNavigation": [
+      "crm.jp2.fr",
+      "*.jp2.fr",
+      "martinsols.addvancesolutions.fr"
+    ]
+  },
+  "plugins": {
+    "App": {
+      "disableBackButtonHandler": true
+    },
+    "Keyboard": {
+      "resize": "body",
+      "resizeOnFullScreen": true,
+      "style": "LIGHT"
+    },
+    "StatusBar": {
+      "overlaysWebView": false,
+      "style": "DARK",
+      "backgroundColor": "#95002e"
+    }
+  }
+}
