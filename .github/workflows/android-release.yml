@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   release:
-    name: Build and publish Android APK
+    name: Build and publish Android APK and Play bundle
     runs-on: ubuntu-latest
 
     steps:
@@ -59,8 +59,9 @@ jobs:
           echo "code=$version_code" >> "$GITHUB_OUTPUT"
           echo "tag=hub-android-v$version_name" >> "$GITHUB_OUTPUT"
           echo "apk=Martin_Sols_$version_name.apk" >> "$GITHUB_OUTPUT"
+          echo "aab=Martin_Sols_$version_name_PlayStore.aab" >> "$GITHUB_OUTPUT"
 
-      - name: Build release APK
+      - name: Build release APK and Play bundle
         working-directory: android
         env:
           JP2_CREATION_ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/android/app/jp2-creation-release.p12
@@ -68,7 +69,7 @@ jobs:
           JP2_CREATION_ANDROID_KEY_ALIAS: ${{ secrets.JP2_CREATION_ANDROID_KEY_ALIAS }}
           JP2_CREATION_ANDROID_KEY_PASSWORD: ${{ secrets.JP2_CREATION_ANDROID_KEY_PASSWORD }}
           JP2_HUB_ANDROID_URL: ${{ secrets.JP2_HUB_ANDROID_URL }}
-        run: ./gradlew --no-daemon clean assembleRelease
+        run: ./gradlew --no-daemon clean assembleGithubRelease bundlePlayRelease
 
       - name: Prepare release asset and manifest
         env:
@@ -76,9 +77,11 @@ jobs:
           VERSION_CODE: ${{ steps.version.outputs.code }}
           TAG_NAME: ${{ steps.version.outputs.tag }}
           APK_NAME: ${{ steps.version.outputs.apk }}
+          AAB_NAME: ${{ steps.version.outputs.aab }}
           RELEASE_NOTES: ${{ inputs.release_notes }}
         run: |
-          cp android/app/build/outputs/apk/release/app-release.apk "$APK_NAME"
+          cp android/app/build/outputs/apk/github/release/app-github-release.apk "$APK_NAME"
+          cp android/app/build/outputs/bundle/playRelease/app-play-release.aab "$AAB_NAME"
           apk_sha256="$(sha256sum "$APK_NAME" | awk '{print $1}')"
           apk_url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG_NAME}/${APK_NAME}"
 
@@ -112,10 +115,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG_NAME: ${{ steps.version.outputs.tag }}
           APK_NAME: ${{ steps.version.outputs.apk }}
+          AAB_NAME: ${{ steps.version.outputs.aab }}
           VERSION_NAME: ${{ steps.version.outputs.name }}
           RELEASE_NOTES: ${{ inputs.release_notes }}
         run: |
           gh release delete "$TAG_NAME" --yes --cleanup-tag || true
           git tag -f "$TAG_NAME"
           git push origin "$TAG_NAME" --force
-          gh release create "$TAG_NAME" "$APK_NAME" --title "Martin Sols Android $VERSION_NAME" --notes "$RELEASE_NOTES"
+          gh release create "$TAG_NAME" "$APK_NAME" "$AAB_NAME" --title "Martin Sols Android $VERSION_NAME" --notes "$RELEASE_NOTES"

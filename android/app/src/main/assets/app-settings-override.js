@@ -147,7 +147,7 @@
         actionRow('Tester la localisation', 'Vérifier l’accès GPS de l’application', 'location', 'data-ms-native-test-location', '<span class="ms-native-settings-pill" data-ms-native-location-status>Désactivée</span>'),
       ]),
       group('Mises à jour', [
-        actionRow('Rechercher une mise à jour', 'Contrôle via GitHub', 'refresh', 'data-ms-native-check-update', '›'),
+        actionRow('Rechercher une mise à jour', 'Contrôle de version', 'refresh', 'data-ms-native-check-update', '›'),
         staticRow('Version installée', 'Martin Sols Android', 'device', 'data-ms-native-app-version', 'App mobile'),
       ]),
       group('Informations', [

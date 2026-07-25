@@ -444,6 +444,10 @@ public class MainActivity extends Activity {
     }
 
     private void scheduleUpdateCheck() {
+        if (!BuildConfig.GITHUB_UPDATES_ENABLED) {
+            return;
+        }
+
         if (updateCheckStarted) {
             return;
         }
@@ -458,6 +462,14 @@ public class MainActivity extends Activity {
     }
 
     private void checkForAppUpdate(boolean notifyWhenCurrent) {
+        if (!BuildConfig.GITHUB_UPDATES_ENABLED) {
+            if (notifyWhenCurrent) {
+                showPlayStoreUpdateDialog();
+            }
+
+            return;
+        }
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -496,6 +508,37 @@ public class MainActivity extends Activity {
             .setMessage("Aucune nouvelle version de Martin Sols n'est disponible pour le moment.")
             .setPositiveButton("OK", null)
             .show();
+    }
+
+    private void showPlayStoreUpdateDialog() {
+        if (isFinishing()) {
+            return;
+        }
+
+        new AlertDialog.Builder(this)
+            .setTitle("Mises a jour Google Play")
+            .setMessage("Cette version de Martin Sols est geree par Google Play. Les mises a jour seront proposees par le Play Store.")
+            .setPositiveButton("Ouvrir Google Play", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    openPlayStoreListing();
+                }
+            })
+            .setNegativeButton("Fermer", null)
+            .show();
+    }
+
+    private void openPlayStoreListing() {
+        String packageName = getPackageName();
+
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName));
+            intent.setPackage("com.android.vending");
+            startActivity(intent);
+        } catch (ActivityNotFoundException exception) {
+            Intent fallbackIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packageName));
+            startActivity(fallbackIntent);
+        }
     }
 
     private boolean isTrustedCrmPage() {
@@ -1424,7 +1467,7 @@ public class MainActivity extends Activity {
             connection.setRequestProperty("Accept", githubContentsResponse ? "application/vnd.github+json" : "application/json");
             connection.setRequestProperty("Cache-Control", "no-cache");
             connection.setRequestProperty("Pragma", "no-cache");
-            connection.setRequestProperty("User-Agent", "JP2-Creation-Android/" + BuildConfig.VERSION_NAME);
+            connection.setRequestProperty("User-Agent", "Martin-Sols-Android/" + BuildConfig.VERSION_NAME);
 
             int responseCode = connection.getResponseCode();
 
