@@ -48,7 +48,7 @@ jobs:
         env:
           JP2_CREATION_ANDROID_KEYSTORE_BASE64: ${{ secrets.JP2_CREATION_ANDROID_KEYSTORE_BASE64 }}
         run: |
-          echo "$JP2_CREATION_ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/jp2-creation-release.jks
+          echo "$JP2_CREATION_ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/jp2-creation-release.p12
 
       - name: Read Android version
         id: version
@@ -63,7 +63,7 @@ jobs:
       - name: Build release APK
         working-directory: android
         env:
-          JP2_CREATION_ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/android/app/jp2-creation-release.jks
+          JP2_CREATION_ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/android/app/jp2-creation-release.p12
           JP2_CREATION_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.JP2_CREATION_ANDROID_KEYSTORE_PASSWORD }}
           JP2_CREATION_ANDROID_KEY_ALIAS: ${{ secrets.JP2_CREATION_ANDROID_KEY_ALIAS }}
           JP2_CREATION_ANDROID_KEY_PASSWORD: ${{ secrets.JP2_CREATION_ANDROID_KEY_PASSWORD }}

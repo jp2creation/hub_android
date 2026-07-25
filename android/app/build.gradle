@@ -20,6 +20,7 @@ android {
         release {
             if (hasJp2CreationReleaseSigning) {
                 storeFile file(jp2CreationKeystorePath)
+                storeType "pkcs12"
                 storePassword System.getenv("JP2_CREATION_ANDROID_KEYSTORE_PASSWORD")
                 keyAlias System.getenv("JP2_CREATION_ANDROID_KEY_ALIAS")
                 keyPassword System.getenv("JP2_CREATION_ANDROID_KEY_PASSWORD")
