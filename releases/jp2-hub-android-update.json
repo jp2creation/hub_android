@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "appName": "Martin Sols",
   "android": {
-    "versionCode": 57,
-    "versionName": "1.55",
+    "versionCode": 58,
+    "versionName": "1.56",
     "required": false,
-    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.55/JP2_Creation_1.55.apk",
-    "sha256": "df039e3fbe08c3d4e5595218a9ac73aa4b7f7094279e162f83d5c6c6ac46918d",
-    "releaseNotes": "Version 1.55 stable : depot Android separe hub_android, signature JP2 Creation et URL Hub injectee par secret."
+    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.56/Martin_Sols_1.56.apk",
+    "sha256": "1eea4ee5ae092b1fc17f831b85d9660654a7d7c163dbe4c675391429d9627331",
+    "releaseNotes": "Version 1.56 stable : renommage de l app en Martin Sols."
   }
 }
