@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "appName": "Martin Sols",
   "android": {
-    "versionCode": 63,
-    "versionName": "1.61",
+    "versionCode": 64,
+    "versionName": "1.62",
     "required": false,
-    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.61/Martin_Sols_1.61.apk",
-    "sha256": "0bc7d594cb2ba94e85d061cf51deff4bb306c21960aaef90e18fc9097f1fecca",
-    "releaseNotes": "La géolocalisation reste désactivée par défaut et ne demande l’autorisation Android qu’après activation volontaire."
+    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.62/Martin_Sols_1.62.apk",
+    "sha256": "ea3ed75bb518a16a92ea9b77e23a5da465b35555b19833c4638f64daf8c04178",
+    "releaseNotes": "Restauration de l’entrée Paramètres de l’app dans le menu utilisateur du CRM, y compris sur la page Paramètres."
   }
 }
