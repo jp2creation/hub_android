@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "appName": "Martin Sols",
   "android": {
-    "versionCode": 61,
-    "versionName": "1.59",
+    "versionCode": 62,
+    "versionName": "1.60",
     "required": false,
-    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.59/Martin_Sols_1.59.apk",
-    "sha256": "9e390eee2831307255a5f7130aad9ef75a8c94c85657b97af99548a39dbba8f0",
-    "releaseNotes": "Correction affichage Android : WebView sous la barre système, bandeau rouge en haut, respect de la zone de sécurité."
+    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.60/Martin_Sols_1.60.apk",
+    "sha256": "0d9440fc3eff5b03a30dd580548c1ba4ac69ad4e89c57e281555c153c6c7f189",
+    "releaseNotes": "Restauration du logo Martin Sols et correction de l’icône Android."
   }
 }
