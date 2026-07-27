@@ -19,12 +19,20 @@
     return {
       locationEnabled: false,
       highAccuracyLocation: true,
+      locationActivatedByUser: false,
     };
   }
 
   function readSettings() {
     try {
-      return Object.assign(defaultSettings(), JSON.parse(localStorage.getItem(storageKey) || '{}'));
+      var storedSettings = JSON.parse(localStorage.getItem(storageKey) || '{}');
+      var nextSettings = Object.assign(defaultSettings(), storedSettings);
+
+      if (nextSettings.locationEnabled && storedSettings.locationActivatedByUser !== true) {
+        nextSettings.locationEnabled = false;
+      }
+
+      return nextSettings;
     } catch (error) {
       return defaultSettings();
     }
@@ -501,7 +509,16 @@
         return;
       }
 
-      showNotice(detail.error || 'Localisation Android indisponible.', true);
+      var errorMessage = detail.error || 'Localisation Android indisponible.';
+
+      if (/refus|desactivee|désactivée/i.test(errorMessage)) {
+        settings.locationEnabled = false;
+        settings.locationActivatedByUser = false;
+        setNativeLocationEnabled(false);
+        writeSettings();
+      }
+
+      showNotice(errorMessage, true);
       renderPanel();
     }
 
@@ -534,6 +551,24 @@
     }
 
     return true;
+  }
+
+  function setNativeLocationEnabled(enabled) {
+    var nativeBridge = bridge();
+
+    if (!nativeBridge || !nativeBridge.setLocationEnabled) {
+      return true;
+    }
+
+    try {
+      var result = nativeResult(nativeBridge.setLocationEnabled(Boolean(enabled)));
+
+      return !result || result.ok !== false;
+    } catch (error) {
+      showNotice(error && error.message ? error.message : 'Réglage GPS Android indisponible.', true);
+
+      return false;
+    }
   }
 
   function requestLocation() {
@@ -628,7 +663,19 @@
 
     if (locationEnabled) {
       locationEnabled.addEventListener('change', function () {
-        settings.locationEnabled = Boolean(locationEnabled.checked);
+        var enabled = Boolean(locationEnabled.checked);
+
+        if (enabled && !setNativeLocationEnabled(true)) {
+          settings.locationEnabled = false;
+          settings.locationActivatedByUser = false;
+          writeSettings();
+          renderPanel();
+
+          return;
+        }
+
+        settings.locationEnabled = enabled;
+        settings.locationActivatedByUser = enabled;
         writeSettings();
 
         if (settings.locationEnabled) {
@@ -636,6 +683,7 @@
           return;
         }
 
+        setNativeLocationEnabled(false);
         lastLocation = null;
         showNotice('Localisation désactivée.', false);
         renderPanel();

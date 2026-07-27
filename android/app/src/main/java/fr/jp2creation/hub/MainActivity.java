@@ -85,6 +85,8 @@ public class MainActivity extends Activity {
     private static final String UPDATE_MANIFEST_URL = "https://raw.githubusercontent.com/jp2creation/hub_android/main/releases/jp2-hub-android-update.json";
     private static final String APK_MIME_TYPE = "application/vnd.android.package-archive";
     private static final String APP_SETTINGS_OVERRIDE_ASSET = "app-settings-override.js";
+    private static final String APP_SETTINGS_PREFS = "jp2_creation_app_settings";
+    private static final String APP_SETTING_LOCATION_ENABLED = "location_enabled";
     private static final String MOBILE_AUTH_PREFS = "jp2_creation_mobile_auth";
     private static final String MOBILE_AUTH_KEY_ALIAS = "jp2_creation_mobile_session";
     private static final String MOBILE_AUTH_SESSION_CIPHER = "session_cipher";
@@ -295,6 +297,7 @@ public class MainActivity extends Activity {
                 return;
             }
 
+            setNativeLocationEnabled(false);
             cancelNativeLocationRequest();
             dispatchNativeLocationResult(requestId, null, "Autorisation GPS refusee par Android.");
         }
@@ -608,7 +611,6 @@ public class MainActivity extends Activity {
         }
 
         scheduleUpdateCheck();
-        requestInitialLocationPermission();
     }
 
     private void scheduleUpdateCheck() {
@@ -732,17 +734,6 @@ public class MainActivity extends Activity {
         trustedCrmPageActive = isTrustedCrmOrigin(url);
     }
 
-    private void requestInitialLocationPermission() {
-        if (hasLocationPermission() || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return;
-        }
-
-        requestPermissions(new String[] {
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-        }, LOCATION_PERMISSION_REQUEST_CODE);
-    }
-
     private void injectAppSettingsOverride(WebView targetWebView) {
         if (targetWebView == null || targetWebView.getUrl() == null || !isTrustedCrmOrigin(targetWebView.getUrl())) {
             return;
@@ -769,6 +760,21 @@ public class MainActivity extends Activity {
             || checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
+    private SharedPreferences appSettingsPreferences() {
+        return getSharedPreferences(APP_SETTINGS_PREFS, Context.MODE_PRIVATE);
+    }
+
+    private boolean isNativeLocationEnabled() {
+        return appSettingsPreferences().getBoolean(APP_SETTING_LOCATION_ENABLED, false);
+    }
+
+    private void setNativeLocationEnabled(boolean enabled) {
+        appSettingsPreferences()
+            .edit()
+            .putBoolean(APP_SETTING_LOCATION_ENABLED, enabled)
+            .apply();
+    }
+
     private void requestNativeLocation(String requestId, boolean highAccuracy) {
         if (requestId == null || requestId.length() == 0) {
             dispatchNativeLocationResult("", null, "Demande GPS invalide.");
@@ -777,6 +783,12 @@ public class MainActivity extends Activity {
         }
 
         cancelNativeLocationRequest();
+
+        if (!isNativeLocationEnabled()) {
+            dispatchNativeLocationResult(requestId, null, "Localisation desactivee dans les parametres de l'app.");
+
+            return;
+        }
 
         pendingNativeLocationRequestId = requestId;
         pendingNativeLocationHighAccuracy = highAccuracy;
@@ -1002,6 +1014,12 @@ public class MainActivity extends Activity {
 
     private void handleGeolocationPermissionPrompt(String origin, GeolocationPermissions.Callback callback) {
         if (!isTrustedCrmOrigin(origin)) {
+            callback.invoke(origin, false, false);
+
+            return;
+        }
+
+        if (!isNativeLocationEnabled()) {
             callback.invoke(origin, false, false);
 
             return;
@@ -2347,6 +2365,30 @@ public class MainActivity extends Activity {
                     MainActivity.this.requestNativeLocation(requestId == null ? "" : requestId, highAccuracy);
                 }
             }, "Recherche de localisation lancee.");
+        }
+
+        @JavascriptInterface
+        public String setLocationEnabled(boolean enabled) {
+            return runTrustedNativeAction(new Runnable() {
+                @Override
+                public void run() {
+                    MainActivity.this.setNativeLocationEnabled(enabled);
+                }
+            }, enabled ? "Localisation activee." : "Localisation desactivee.");
+        }
+
+        @JavascriptInterface
+        public String isLocationEnabled() {
+            JSONObject result = new JSONObject();
+
+            try {
+                result.put("ok", true);
+                result.put("enabled", MainActivity.this.isNativeLocationEnabled());
+            } catch (JSONException exception) {
+                return "{\"ok\":false}";
+            }
+
+            return result.toString();
         }
 
         @JavascriptInterface
