@@ -17,6 +17,7 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Insets;
 import android.graphics.SurfaceTexture;
 import android.hardware.biometrics.BiometricPrompt;
 import android.location.Location;
@@ -41,6 +42,8 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
@@ -119,6 +122,8 @@ public class MainActivity extends Activity {
     };
     private FrameLayout rootView;
     private WebView webView;
+    private View statusBarGuard;
+    private View navigationBarGuard;
     private FrameLayout splashLayer;
     private TextureView splashView;
     private Surface splashSurface;
@@ -142,6 +147,8 @@ public class MainActivity extends Activity {
     private volatile boolean trustedCrmPageActive;
     private boolean updateCheckStarted;
     private boolean updateInstallStarted;
+    private int appliedTopInset;
+    private int appliedBottomInset;
 
     private final Runnable hideSplash = new Runnable() {
         @Override
@@ -165,19 +172,28 @@ public class MainActivity extends Activity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         rootView = new FrameLayout(this);
+        rootView.setBackgroundColor(JP2_CREATION_BACKGROUND);
+        configureRootWindowInsets(rootView);
 
         webView = new WebView(this);
         configureCrmWebView(webView);
-        rootView.addView(webView, matchParentLayoutParams());
+        rootView.addView(webView, safeAreaLayoutParams());
 
         splashLayer = new FrameLayout(this);
         splashLayer.setBackgroundColor(SPLASH_BACKGROUND);
         splashView = new IntroTextureView(this);
         configureSplashTextureView(splashView);
         splashLayer.addView(splashView, centeredMatchParentLayoutParams());
-        rootView.addView(splashLayer, matchParentLayoutParams());
+        rootView.addView(splashLayer, safeAreaLayoutParams());
+
+        statusBarGuard = systemBarGuard(JP2_CREATION_RED);
+        navigationBarGuard = systemBarGuard(JP2_CREATION_NAVIGATION);
+        rootView.addView(statusBarGuard, topGuardLayoutParams(0));
+        rootView.addView(navigationBarGuard, bottomGuardLayoutParams(0));
 
         setContentView(rootView);
+        applySystemBarInsets(defaultSystemBarInset("status_bar_height"), defaultSystemBarInset("navigation_bar_height"));
+        rootView.requestApplyInsets();
         webView.loadUrl(HUB_URL);
         handler.postDelayed(hideSplash, SPLASH_DURATION_MS);
     }
@@ -186,6 +202,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         configureSystemBars();
+        requestRootWindowInsets();
 
         if (webView != null) {
             webView.onResume();
@@ -207,6 +224,7 @@ public class MainActivity extends Activity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         configureSystemBars();
+        requestRootWindowInsets();
 
         if (webView != null) {
             webView.requestLayout();
@@ -317,11 +335,47 @@ public class MainActivity extends Activity {
         );
     }
 
+    private FrameLayout.LayoutParams safeAreaLayoutParams() {
+        FrameLayout.LayoutParams params = matchParentLayoutParams();
+        params.topMargin = appliedTopInset;
+        params.bottomMargin = appliedBottomInset;
+
+        return params;
+    }
+
     private FrameLayout.LayoutParams centeredMatchParentLayoutParams() {
         FrameLayout.LayoutParams params = matchParentLayoutParams();
         params.gravity = Gravity.CENTER;
 
         return params;
+    }
+
+    private FrameLayout.LayoutParams topGuardLayoutParams(int height) {
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            height
+        );
+        params.gravity = Gravity.TOP;
+
+        return params;
+    }
+
+    private FrameLayout.LayoutParams bottomGuardLayoutParams(int height) {
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            height
+        );
+        params.gravity = Gravity.BOTTOM;
+
+        return params;
+    }
+
+    private View systemBarGuard(int color) {
+        View guard = new View(this);
+        guard.setBackgroundColor(color);
+        guard.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+
+        return guard;
     }
 
     private void configureCrmWebView(WebView view) {
@@ -387,9 +441,11 @@ public class MainActivity extends Activity {
 
     private void configureSystemBars() {
         Window window = getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.setDecorFitsSystemWindows(true);
+            window.setDecorFitsSystemWindows(false);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -397,9 +453,121 @@ public class MainActivity extends Activity {
             window.setNavigationBarColor(JP2_CREATION_NAVIGATION);
         }
 
+        int systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            window.getDecorView().setSystemUiVisibility(0);
+            window.getDecorView().setSystemUiVisibility(systemUiVisibility);
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && window.getInsetsController() != null) {
+            window.getInsetsController().setSystemBarsAppearance(
+                0,
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+                    | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+            );
+        } else {
+            window.getDecorView().setSystemUiVisibility(systemUiVisibility);
+        }
+    }
+
+    private void configureRootWindowInsets(FrameLayout root) {
+        root.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+            @Override
+            public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
+                applySystemBarInsets(systemBarTopInset(insets), systemBarBottomInset(insets));
+
+                return insets;
+            }
+        });
+    }
+
+    private void requestRootWindowInsets() {
+        if (rootView == null) {
+            return;
+        }
+
+        rootView.requestApplyInsets();
+    }
+
+    private int systemBarTopInset(WindowInsets insets) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Insets systemBars = insets.getInsets(WindowInsets.Type.systemBars());
+
+            return systemBars.top;
+        }
+
+        return insets.getSystemWindowInsetTop();
+    }
+
+    private int systemBarBottomInset(WindowInsets insets) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Insets systemBars = insets.getInsets(WindowInsets.Type.systemBars());
+
+            return systemBars.bottom;
+        }
+
+        return insets.getSystemWindowInsetBottom();
+    }
+
+    private int defaultSystemBarInset(String resourceName) {
+        int resourceId = getResources().getIdentifier(resourceName, "dimen", "android");
+
+        if (resourceId <= 0) {
+            return 0;
+        }
+
+        return getResources().getDimensionPixelSize(resourceId);
+    }
+
+    private void applySystemBarInsets(int topInset, int bottomInset) {
+        int safeTopInset = Math.max(0, topInset);
+        int safeBottomInset = Math.max(0, bottomInset);
+
+        appliedTopInset = safeTopInset;
+        appliedBottomInset = safeBottomInset;
+
+        updateTopGuard(statusBarGuard, safeTopInset);
+        updateBottomGuard(navigationBarGuard, safeBottomInset);
+        updateSafeAreaMargins(webView, safeTopInset, safeBottomInset);
+        updateSafeAreaMargins(splashLayer, safeTopInset, safeBottomInset);
+    }
+
+    private void updateTopGuard(View guard, int height) {
+        if (guard == null) {
+            return;
+        }
+
+        guard.setVisibility(height > 0 ? View.VISIBLE : View.GONE);
+        guard.setLayoutParams(topGuardLayoutParams(height));
+        guard.bringToFront();
+    }
+
+    private void updateBottomGuard(View guard, int height) {
+        if (guard == null) {
+            return;
+        }
+
+        guard.setVisibility(height > 0 ? View.VISIBLE : View.GONE);
+        guard.setLayoutParams(bottomGuardLayoutParams(height));
+        guard.bringToFront();
+    }
+
+    private void updateSafeAreaMargins(View view, int topInset, int bottomInset) {
+        if (view == null || !(view.getLayoutParams() instanceof FrameLayout.LayoutParams)) {
+            return;
+        }
+
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
+
+        if (params.topMargin == topInset && params.bottomMargin == bottomInset) {
+            return;
+        }
+
+        params.topMargin = topInset;
+        params.bottomMargin = bottomInset;
+        view.setLayoutParams(params);
     }
 
     private void hideSplashView() {
