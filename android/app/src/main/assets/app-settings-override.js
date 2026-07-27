@@ -81,7 +81,7 @@
       '.ms-native-settings{position:fixed;inset:0;z-index:2147483647;overflow:hidden;background:#f4f7fb;color:#1d354f;font-family:"DM Sans",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}',
       '.ms-native-settings-panel{width:100%;height:100dvh;min-height:100dvh;overflow:auto;background:#f4f7fb}',
       '.ms-native-settings-header,.ms-native-settings-content{width:min(100%,560px);margin:0 auto}',
-      '.ms-native-settings-header{display:grid;gap:18px;padding:max(22px,calc(env(safe-area-inset-top) + 14px)) 24px 14px}',
+      '.ms-native-settings-header{display:grid;gap:14px;padding:16px 24px 12px}',
       '.ms-native-settings-back{display:inline-flex;align-items:center;gap:6px;justify-self:start;min-height:30px;padding:0;border:0;background:transparent;color:#95002e;font:inherit;font-size:.95rem;font-weight:850}',
       '.ms-native-settings-header h2{max-width:12ch;margin:0;color:#1d354f;font-size:1.5rem;font-weight:950;letter-spacing:0;line-height:1.12}',
       '.ms-native-settings-content{display:grid;gap:14px;padding:0 24px max(28px,calc(env(safe-area-inset-bottom) + 18px))}',
