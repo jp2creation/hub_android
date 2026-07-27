@@ -10,6 +10,8 @@
   var locationLoading = false;
   var quickLoginLoading = false;
   var noticeTimer = null;
+  var menuObserver = null;
+  var menuInjectionTimer = null;
 
   function bridge() {
     return window.Jp2CreationNativeApp || null;
@@ -58,6 +60,7 @@
       location: '<path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"></path><circle cx="12" cy="10" r="2"></circle>',
       lock: '<rect x="5" y="10" width="14" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path>',
       refresh: '<path d="M20 11a8 8 0 0 0-14.4-4.8L4 8"></path><path d="M4 4v4h4"></path><path d="M4 13a8 8 0 0 0 14.4 4.8L20 16"></path><path d="M20 20v-4h-4"></path>',
+      settings: '<path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"></path><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.35 1.06V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8.6 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.06-1H3.45a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8.6a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6 1.65 1.65 0 0 0 .35-1.06V3a2 2 0 1 1 4 0v.09A1.65 1.65 0 0 0 15.4 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.06 1h.09a2 2 0 1 1 0 4h-.09A1.65 1.65 0 0 0 19.4 15Z"></path>',
       shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path><path d="m9 12 2 2 4-4"></path>',
       wifi: '<path d="M5 12.5a10 10 0 0 1 14 0"></path><path d="M8.5 16a5 5 0 0 1 7 0"></path><path d="M12 19h.01"></path>',
     };
@@ -116,6 +119,92 @@
     ].join('');
 
     document.head.appendChild(style);
+  }
+
+  function installCrmAppMarkers() {
+    var nativeBridge = bridge();
+
+    if (nativeBridge && !window.MartinSolsNativeApp) {
+      window.MartinSolsNativeApp = nativeBridge;
+    }
+
+    window.MartinSolsCrmConfig = window.MartinSolsCrmConfig || {};
+    window.MartinSolsCrmConfig.mobile = Object.assign({}, window.MartinSolsCrmConfig.mobile || {}, {
+      app: true,
+      platform: 'android',
+    });
+
+    if (document.body) {
+      document.body.classList.add('crm-mobile-app');
+    }
+  }
+
+  function createCrmAppSettingsMenuItem() {
+    var button = document.createElement('button');
+    var iconNode = document.createElement('span');
+    var copy = document.createElement('span');
+    var title = document.createElement('strong');
+    var description = document.createElement('small');
+
+    button.className = 'crm-native-user-menu-item';
+    button.type = 'button';
+    button.setAttribute('data-crm-mobile-settings-toggle', '');
+    button.setAttribute('role', 'menuitem');
+
+    iconNode.className = 'crm-native-user-menu-icon';
+    iconNode.innerHTML = icon('settings');
+    title.textContent = 'Paramètres de l’app';
+    description.textContent = 'Mises à jour et options mobile';
+
+    copy.appendChild(title);
+    copy.appendChild(description);
+    button.appendChild(iconNode);
+    button.appendChild(copy);
+
+    return button;
+  }
+
+  function injectCrmAppSettingsMenuItem() {
+    installCrmAppMarkers();
+
+    document.querySelectorAll('[data-crm-native-user-menu], .crm-native-user-menu').forEach(function (menu) {
+      if (menu.querySelector('[data-crm-mobile-settings-toggle]')) {
+        return;
+      }
+
+      var logoutItem = menu.querySelector('[data-crm-native-logout], .crm-native-user-menu-danger');
+      var button = createCrmAppSettingsMenuItem();
+
+      if (logoutItem && logoutItem.parentNode === menu) {
+        menu.insertBefore(button, logoutItem);
+        return;
+      }
+
+      menu.appendChild(button);
+    });
+  }
+
+  function scheduleCrmMenuInjection() {
+    if (menuInjectionTimer) {
+      return;
+    }
+
+    menuInjectionTimer = window.setTimeout(function () {
+      menuInjectionTimer = null;
+      injectCrmAppSettingsMenuItem();
+    }, 50);
+  }
+
+  function watchCrmMenus() {
+    if (menuObserver || !document.documentElement || !window.MutationObserver) {
+      return;
+    }
+
+    menuObserver = new MutationObserver(scheduleCrmMenuInjection);
+    menuObserver.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
   }
 
   function ensurePanel() {
@@ -723,10 +812,19 @@
     document.body.classList.remove('ms-native-settings-open');
   }
 
+  installCrmAppMarkers();
+  injectCrmAppSettingsMenuItem();
+  watchCrmMenus();
+
   document.addEventListener('click', function (event) {
     var target = event.target;
 
     if (!target || !target.closest) {
+      return;
+    }
+
+    if (target.closest('[data-crm-native-user-menu-toggle]')) {
+      scheduleCrmMenuInjection();
       return;
     }
 
