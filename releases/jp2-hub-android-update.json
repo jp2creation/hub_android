@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "appName": "Martin Sols",
   "android": {
-    "versionCode": 62,
-    "versionName": "1.60",
+    "versionCode": 63,
+    "versionName": "1.61",
     "required": false,
-    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.60/Martin_Sols_1.60.apk",
-    "sha256": "0d9440fc3eff5b03a30dd580548c1ba4ac69ad4e89c57e281555c153c6c7f189",
-    "releaseNotes": "Restauration du logo Martin Sols et correction de l’icône Android."
+    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.61/Martin_Sols_1.61.apk",
+    "sha256": "0bc7d594cb2ba94e85d061cf51deff4bb306c21960aaef90e18fc9097f1fecca",
+    "releaseNotes": "La géolocalisation reste désactivée par défaut et ne demande l’autorisation Android qu’après activation volontaire."
   }
 }
