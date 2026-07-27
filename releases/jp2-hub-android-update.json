@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "appName": "Martin Sols",
   "android": {
-    "versionCode": 60,
-    "versionName": "1.58",
+    "versionCode": 61,
+    "versionName": "1.59",
     "required": false,
-    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.58/Martin_Sols_1.58.apk",
-    "sha256": "4466ce7dbfa13113cc36fb0a97f1949f5e9ab3c454d46bf9af893f1a93d153cf",
-    "releaseNotes": "Version 1.58 stable : ajout du bundle Google Play Store et conservation de l APK GitHub."
+    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.59/Martin_Sols_1.59.apk",
+    "sha256": "9e390eee2831307255a5f7130aad9ef75a8c94c85657b97af99548a39dbba8f0",
+    "releaseNotes": "Correction affichage Android : WebView sous la barre système, bandeau rouge en haut, respect de la zone de sécurité."
   }
 }
