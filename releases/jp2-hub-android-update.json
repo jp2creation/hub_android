@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "appName": "Martin Sols",
   "android": {
-    "versionCode": 65,
-    "versionName": "1.63",
+    "versionCode": 66,
+    "versionName": "1.64",
     "required": false,
-    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.63/Martin_Sols_1.63.apk",
-    "sha256": "ccea7dc8b198098ec2ee36b0fc8a141e76d0374d6234ae830ed7c8dd4a463851",
-    "releaseNotes": "Réduction de l’espace vide en haut de l’écran Paramètres de l’app."
+    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.64/Martin_Sols_1.64.apk",
+    "sha256": "46efa8fcb234bc9d3766c892830c5f93079d49bc3e155e03092b93ce1f32612c",
+    "releaseNotes": "Version de test fermé Play Store 1.64."
   }
 }
