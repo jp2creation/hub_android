@@ -1,4 +1,4 @@
-package fr.jp2creation.hub;
+package fr.martinsols.hub;
 
 import android.Manifest;
 import android.app.Activity;
