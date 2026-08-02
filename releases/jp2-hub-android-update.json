@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "appName": "Martin Sols",
   "android": {
-    "versionCode": 67,
-    "versionName": "1.65",
+    "versionCode": 68,
+    "versionName": "1.66",
     "required": false,
-    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.65/Martin_Sols_1.65.apk",
-    "sha256": "029a823c85e6d9bdac1b228b039843bb62ef31f685351b5696a83cda5d2f0a36",
-    "releaseNotes": "Changement du package Android en fr.martinsols.hub pour la nouvelle fiche Play Store."
+    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.66/Martin_Sols_1.66.apk",
+    "sha256": "d2e4c02edf95531341119241f3f57acf8f6ea6ec303e8b7af2205c9760d369e6",
+    "releaseNotes": "Nouvelle animation d’ouverture Martin Sols."
   }
 }
