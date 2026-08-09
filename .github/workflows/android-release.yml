@@ -1,6 +1,17 @@
 name: Martin Sols Android release
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/android-release.yml
+      - android/**
+      - index.html
+      - package.json
+      - package-lock.json
+      - src/**
+      - vite.config.ts
   workflow_dispatch:
     inputs:
       release_notes:
@@ -78,7 +89,7 @@ jobs:
           TAG_NAME: ${{ steps.version.outputs.tag }}
           APK_NAME: ${{ steps.version.outputs.apk }}
           AAB_NAME: ${{ steps.version.outputs.aab }}
-          RELEASE_NOTES: ${{ inputs.release_notes }}
+          RELEASE_NOTES: ${{ inputs.release_notes || 'Mise a jour Martin Sols Android.' }}
         run: |
           cp android/app/build/outputs/apk/github/release/app-github-release.apk "$APK_NAME"
           cp android/app/build/outputs/bundle/playRelease/app-play-release.aab "$AAB_NAME"
@@ -117,7 +128,7 @@ jobs:
           APK_NAME: ${{ steps.version.outputs.apk }}
           AAB_NAME: ${{ steps.version.outputs.aab }}
           VERSION_NAME: ${{ steps.version.outputs.name }}
-          RELEASE_NOTES: ${{ inputs.release_notes }}
+          RELEASE_NOTES: ${{ inputs.release_notes || 'Mise a jour Martin Sols Android.' }}
         run: |
           gh release delete "$TAG_NAME" --yes --cleanup-tag || true
           git tag -f "$TAG_NAME"
