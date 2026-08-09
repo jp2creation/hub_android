@@ -114,6 +114,7 @@ public class MainActivity extends Activity {
     private static final int JP2_CREATION_BACKGROUND = Color.rgb(245, 247, 251);
     private static final int JP2_CREATION_NAVIGATION = Color.rgb(17, 24, 39);
     private static final int SPLASH_BACKGROUND = Color.rgb(255, 250, 247);
+    private static final long APP_LOCK_PROMPT_DELAY_MS = 250L;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Executor mainExecutor = new Executor() {
@@ -127,6 +128,7 @@ public class MainActivity extends Activity {
     private View statusBarGuard;
     private View navigationBarGuard;
     private FrameLayout splashLayer;
+    private FrameLayout appLockLayer;
     private TextureView splashView;
     private Surface splashSurface;
     private MediaPlayer splashPlayer;
@@ -147,6 +149,8 @@ public class MainActivity extends Activity {
     private Runnable nativeLocationTimeout;
     private CancellationSignal biometricCancellationSignal;
     private volatile boolean trustedCrmPageActive;
+    private boolean appLockRequired;
+    private boolean appUnlockInProgress;
     private boolean updateCheckStarted;
     private boolean updateInstallStarted;
     private int appliedTopInset;
@@ -188,6 +192,10 @@ public class MainActivity extends Activity {
         splashLayer.addView(splashView, centeredMatchParentLayoutParams());
         rootView.addView(splashLayer, safeAreaLayoutParams());
 
+        appLockLayer = createAppLockLayer();
+        appLockLayer.setVisibility(View.GONE);
+        rootView.addView(appLockLayer, safeAreaLayoutParams());
+
         statusBarGuard = systemBarGuard(JP2_CREATION_RED);
         navigationBarGuard = systemBarGuard(JP2_CREATION_NAVIGATION);
         rootView.addView(statusBarGuard, topGuardLayoutParams(0));
@@ -198,6 +206,16 @@ public class MainActivity extends Activity {
         rootView.requestApplyInsets();
         webView.loadUrl(HUB_URL);
         handler.postDelayed(hideSplash, SPLASH_DURATION_MS);
+
+        if (isAppCodeConfigured()) {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    lockApp();
+                    requestAppUnlockIfNeeded();
+                }
+            }, SPLASH_DURATION_MS + APP_LOCK_PROMPT_DELAY_MS);
+        }
     }
 
     @Override
@@ -220,6 +238,13 @@ public class MainActivity extends Activity {
                 showUpdateFailure("Autorisation non accordee : Android bloque l'installation de la mise a jour.");
             }
         }
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                requestAppUnlockIfNeeded();
+            }
+        }, APP_LOCK_PROMPT_DELAY_MS);
     }
 
     @Override
@@ -247,6 +272,10 @@ public class MainActivity extends Activity {
 
         if (splashPlayer != null && splashPlayer.isPlaying()) {
             splashPlayer.pause();
+        }
+
+        if (!isFinishing() && pendingDeviceCredentialRequestId.length() == 0 && isAppCodeConfigured()) {
+            lockApp();
         }
 
         super.onPause();
@@ -535,6 +564,7 @@ public class MainActivity extends Activity {
         updateBottomGuard(navigationBarGuard, safeBottomInset);
         updateSafeAreaMargins(webView, safeTopInset, safeBottomInset);
         updateSafeAreaMargins(splashLayer, safeTopInset, safeBottomInset);
+        updateSafeAreaMargins(appLockLayer, safeTopInset, safeBottomInset);
     }
 
     private void updateTopGuard(View guard, int height) {
@@ -1123,6 +1153,76 @@ public class MainActivity extends Activity {
         return isDeviceSecure() || isAppCodeConfigured();
     }
 
+    private FrameLayout createAppLockLayer() {
+        FrameLayout layer = new FrameLayout(this);
+        layer.setBackgroundColor(JP2_CREATION_RED);
+        layer.setClickable(true);
+        layer.setFocusable(true);
+
+        TextView message = new TextView(this);
+        message.setGravity(Gravity.CENTER);
+        message.setText("HUB verrouille\nEntre le code app pour continuer.");
+        message.setTextColor(Color.WHITE);
+        message.setTextSize(20);
+
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.gravity = Gravity.CENTER;
+        params.setMargins(dp(32), 0, dp(32), 0);
+        layer.addView(message, params);
+
+        return layer;
+    }
+
+    private void lockApp() {
+        if (!isAppCodeConfigured()) {
+            unlockApp();
+            return;
+        }
+
+        appLockRequired = true;
+        showAppLockLayer();
+    }
+
+    private void unlockApp() {
+        appLockRequired = false;
+        appUnlockInProgress = false;
+        hideAppLockLayer();
+    }
+
+    private void showAppLockLayer() {
+        if (appLockLayer == null) {
+            return;
+        }
+
+        appLockLayer.setVisibility(View.VISIBLE);
+        appLockLayer.bringToFront();
+        updateTopGuard(statusBarGuard, appliedTopInset);
+        updateBottomGuard(navigationBarGuard, appliedBottomInset);
+    }
+
+    private void hideAppLockLayer() {
+        if (appLockLayer != null) {
+            appLockLayer.setVisibility(View.GONE);
+        }
+    }
+
+    private void requestAppUnlockIfNeeded() {
+        if (!appLockRequired || appUnlockInProgress) {
+            return;
+        }
+
+        if (!isAppCodeConfigured()) {
+            unlockApp();
+            return;
+        }
+
+        appUnlockInProgress = true;
+        showAppUnlockPrompt();
+    }
+
     private String saveMobileSessionPayload(String payload) {
         if (!isTrustedCrmPage()) {
             return "{\"ok\":false,\"error\":\"Page HUB non autorisee.\"}";
@@ -1240,7 +1340,7 @@ public class MainActivity extends Activity {
         layout.setPadding(dp(24), dp(12), dp(24), 0);
 
         TextView help = new TextView(this);
-        help.setText("Choisis un code de 4 a 8 chiffres. Il servira a proteger la connexion rapide si le telephone n'a pas de verrouillage Android.");
+        help.setText("Choisis un code de 4 a 8 chiffres. Il servira a verrouiller l'app et a proteger la connexion rapide si le telephone n'a pas de verrouillage Android.");
         help.setTextColor(Color.rgb(100, 116, 139));
         help.setTextSize(14);
         layout.addView(help, new LinearLayout.LayoutParams(
@@ -1295,10 +1395,71 @@ public class MainActivity extends Activity {
                         if (storeAppCode(code)) {
                             dialog.dismiss();
                             dispatchNativeAuthStatusChanged();
+                            lockApp();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    requestAppUnlockIfNeeded();
+                                }
+                            }, APP_LOCK_PROMPT_DELAY_MS);
                             return;
                         }
 
                         codeInput.setError("Code impossible a enregistrer");
+                    }
+                });
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void showAppUnlockPrompt() {
+        if (isFinishing()) {
+            appUnlockInProgress = false;
+            return;
+        }
+
+        EditText codeInput = appCodeInput("Code app");
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(dp(24), dp(10), dp(24), 0);
+        layout.addView(codeInput, new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+            .setTitle("HUB verrouille")
+            .setMessage("Entre le code app pour deverrouiller le HUB.")
+            .setView(layout)
+            .setPositiveButton("Deverrouiller", null)
+            .setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int which) {
+                    appUnlockInProgress = false;
+                    showAppLockLayer();
+                    moveTaskToBack(true);
+                }
+            })
+            .setCancelable(false)
+            .create();
+
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface shownDialog) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View clickedView) {
+                        String code = normalizeAppCode(codeInput.getText().toString());
+
+                        if (verifyAppCode(code)) {
+                            dialog.dismiss();
+                            unlockApp();
+                            return;
+                        }
+
+                        codeInput.setError("Code incorrect");
                     }
                 });
             }
@@ -1439,6 +1600,7 @@ public class MainActivity extends Activity {
             clearSavedMobileSession();
         }
 
+        unlockApp();
         dispatchNativeAuthStatusChanged();
     }
 
@@ -2411,6 +2573,17 @@ public class MainActivity extends Activity {
                     showSetAppCodeDialog();
                 }
             }, "Ouverture du code app Martin Sols.");
+        }
+
+        @JavascriptInterface
+        public String lockApp() {
+            return runTrustedNativeAction(new Runnable() {
+                @Override
+                public void run() {
+                    MainActivity.this.lockApp();
+                    requestAppUnlockIfNeeded();
+                }
+            }, "Application verrouillee.");
         }
 
         @JavascriptInterface

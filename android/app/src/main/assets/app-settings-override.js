@@ -233,6 +233,7 @@
         actionRow('Sécurité de l’appareil', 'Empreinte, visage ou code Android', 'shield', 'data-ms-native-device-security', '<span class="ms-native-settings-pill" data-ms-native-device-status>À configurer</span>'),
         actionRow('Code app Martin Sols', 'Code local de 4 à 8 chiffres', 'lock', 'data-ms-native-set-app-code', '<span class="ms-native-settings-action" data-ms-native-set-app-code-action>Définir</span>'),
         staticRow('État du code app', 'Protection locale Martin Sols', 'code', 'data-ms-native-app-code-status', 'Non défini'),
+        actionRow('Verrouiller l app', 'Demander le code app maintenant', 'lock', 'data-ms-native-lock-app', '<em>&rsaquo;</em>'),
         actionRow('Supprimer le code app', 'Retirer le code local Martin Sols', 'key', 'data-ms-native-clear-app-code', '›'),
       ]),
       group('Connexion rapide', [
@@ -384,6 +385,7 @@
     setPill('[data-ms-native-location-status]', locationLabel(), Boolean(lastLocation || settings.locationEnabled), false);
     setButtonDisabled('[data-ms-native-test-location]', locationLoading || !settings.locationEnabled);
     setButtonDisabled('[data-ms-native-enable-auth]', quickLoginLoading || hasQuickLogin || !status.available);
+    setButtonDisabled('[data-ms-native-lock-app]', !hasAppCode || !nativeBridgeHas('lockApp'));
     setButtonDisabled('[data-ms-native-clear-app-code]', !hasAppCode);
     setButtonDisabled('[data-ms-native-clear-auth]', !hasQuickLogin);
     setText('[data-ms-native-set-app-code-action]', hasAppCode ? 'Modifier' : 'Définir');
@@ -396,6 +398,12 @@
     if (button) {
       button.disabled = Boolean(disabled);
     }
+  }
+
+  function nativeBridgeHas(methodName) {
+    var nativeBridge = bridge();
+
+    return Boolean(nativeBridge && nativeBridge[methodName]);
   }
 
   function showNotice(message, isError) {
@@ -703,6 +711,7 @@
     var deviceSecurityButton = query('[data-ms-native-device-security]');
     var enableAuthButton = query('[data-ms-native-enable-auth]');
     var setAppCodeButton = query('[data-ms-native-set-app-code]');
+    var lockAppButton = query('[data-ms-native-lock-app]');
     var clearAppCodeButton = query('[data-ms-native-clear-app-code]');
     var clearAuthButton = query('[data-ms-native-clear-auth]');
 
@@ -734,6 +743,12 @@
 
     if (enableAuthButton) {
       enableAuthButton.addEventListener('click', enableQuickLogin);
+    }
+
+    if (lockAppButton) {
+      lockAppButton.addEventListener('click', function () {
+        callNative('lockApp', 'Application verrouillee.');
+      });
     }
 
     if (clearAppCodeButton) {
