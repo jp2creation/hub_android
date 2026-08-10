@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "appName": "Martin Sols",
   "android": {
-    "versionCode": 69,
-    "versionName": "1.67",
+    "versionCode": 70,
+    "versionName": "1.68",
     "required": false,
-    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.67/Martin_Sols_1.67.apk",
-    "sha256": "da10d074e8af07ffd3aac01666a86af7689e145aa32e1aa6f35d58de15450293",
+    "apkUrl": "https://github.com/jp2creation/hub_android/releases/download/hub-android-v1.68/Martin_Sols_1.68.apk",
+    "sha256": "e6e01f71cfaf4ff28a7722bf3780365df84ff422509e89082315bed77afe7e6a",
     "releaseNotes": "Mise a jour Martin Sols Android."
   }
 }
